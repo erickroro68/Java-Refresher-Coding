@@ -1,0 +1,30 @@
+# Maven / Java build output
+target/
+*.class
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Sensitive local data
+keys/
+evidence-storage/
+
+# Environment files
+.env
+.env.*
