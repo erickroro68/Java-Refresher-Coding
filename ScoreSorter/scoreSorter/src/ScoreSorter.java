@@ -1,4 +1,3 @@
-import java.util.*;
 
 public class ScoreSorter {
   public static void main(String[] args) {
@@ -9,6 +8,23 @@ public class ScoreSorter {
   }
 
   public static int[] scoreSorter(int[] array, int topScore) {
-    // Write your code here
+    int[] scoresCount = new int[topScore + 1];
+
+    for (int i = 0; i < array.length; i++) {
+      int score = array[i];
+      scoresCount[score]++;
+    }
+
+    int[] finalCount = new int[array.length];
+    int sortedIndex = 0;
+
+    for (int score = topScore; score >= 0; score--) {
+      for (int count = 0; count < scoresCount[score]; count++) {
+        finalCount[sortedIndex] = score;
+        sortedIndex++;
+      }
+    }
+
+    return finalCount;
   }
 }
