@@ -26,8 +26,9 @@ public class TreasureMap {
             //  as our inside for loops goes through each row 
             for(int c = 0; c < map[r].length; c++) {
                 // printing our new updated map row and column
-                System.out.println(map[r][c]);
+                System.out.print(map[r][c] + ' ');
             }
+            System.out.println();
         }
         
     }
