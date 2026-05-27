@@ -41,13 +41,8 @@ public static void main(String[] args) {
                 // TODO:
                 // IF CURRENT VALUE IS "T"
                 if(map[r][c].equals("T")) {
-                    // TODO:
-                    // PRINT COORDINATES
+                    
                     System.out.println("Found a Trap at cordinates: [" + r + "] , [" + c + "]");
-                    // TODO:
-                    // INCREMENT:
-                    // totalTraps
-                    // currentRowTrapCount
                     totalTraps++;
                     currentRowTrapCount++;
                 }
