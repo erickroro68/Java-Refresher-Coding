@@ -26,4 +26,20 @@ public class footballTracker {
         selectedPlayer.printAllStats();
     }
 
+    public Player searchByLastName(String usersLastNameChoice) {
+        for (int i = 0; i < playersList.size(); i++) {
+            Player selectedPlayer = playersList.get(i);
+
+            if (selectedPlayer.getLastName().equalsIgnoreCase(usersLastNameChoice)) {
+                return selectedPlayer;
+            }
+                 
+         
+
+        }
+
+        return null;
+    
+    }
+
 }

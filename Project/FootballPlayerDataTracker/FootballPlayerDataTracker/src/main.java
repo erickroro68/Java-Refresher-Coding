@@ -14,5 +14,14 @@ public class main {
         tracker.viewPlayers();
 
         tracker.viewPlayerStats(2);
+
+        Player foundPlayer = tracker.searchByLastName("Ro");
+
+        if (foundPlayer != null) {
+            foundPlayer.printAllStats();
+        } else {
+            System.out.println("Player Not Found");
+        }
+
     }
 }
