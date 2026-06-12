@@ -6,7 +6,7 @@ public class main {
         Player p3 = new Player("Patrick Mahomes", "QB", "Chiefs", 225, 6.2);
 
         footballTracker tracker = new footballTracker();
-
+        LeaderBoard leaders = new LeaderBoard();
         tracker.addPlayer(p1);
         tracker.addPlayer(p2);
         tracker.addPlayer(p3);
@@ -15,9 +15,6 @@ public class main {
 
         tracker.viewPlayerStats(2);
 
-        Player foundPlayer = tracker.searchByLastName("Ro");
-
-        if (foundPlayer != null) {
             foundPlayer.printAllStats();
         } else {
             System.out.println("Player Not Found");

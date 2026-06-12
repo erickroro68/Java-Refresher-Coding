@@ -33,13 +33,13 @@ public class footballTracker {
             if (selectedPlayer.getLastName().equalsIgnoreCase(usersLastNameChoice)) {
                 return selectedPlayer;
             }
-                 
-         
-
-        }
 
         return null;
-    
+
+    }
+
+    public ArrayList<Player> getPlayerList()  {
+        return playersList;
     }
 
 }
