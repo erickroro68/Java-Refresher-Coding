@@ -21,10 +21,6 @@ public class Player {
         receivingYardsAmount = 0;
     }
 
-    public void printPlayer() {
-        System.out.println("Players Name: " + name);
-    }
-
     public void addTouchdown() {
         touchdownCounter++;
         System.out.println("\nTouchdownnn! " + getLastName() + " has: " + getTouchdownAmt() + " TD's \n");
@@ -68,9 +64,21 @@ public class Player {
         return lastName[lastName.length - 1];
     }
 
+    public String getFullName() {
+        return name;
+    }
+
+    public String getPlayersTeam() {
+        return currentTeam;
+    }
+
+    public String getPlayersPosition() {
+        return playerPosition;
+    }
+
     public String getAllStats() {
 
-        return "\n" + getLastName() + "'s Total Stats " + "\n===========================" + "\nPassing Yards: "
+        return "\n" + getFullName() + "'s Total Stats " + "\n===========================" + "\nPassing Yards: "
                 + getPassingYards() + "\nRushing Yards: " + getRushingYardsAmt()
                 + "\nReceiving Yards: " + getReceivingYards() + "\n Weight: " + weight + "\nHeight: " + height;
     }
