@@ -65,6 +65,7 @@ public class Simulations {
     public void printWeekSimulation(ArrayList<Player> playersList) {
 
         System.out.println("===== Simulating One Week =====");
+
         initializeTeamRatings(playersList);
         System.out.println("\nInitialized Team Ratings!\n");
 
@@ -80,14 +81,19 @@ public class Simulations {
             String opponentMatchup = weeklyMatchups.get(teamOfCurrentPlayer);
 
             if (opponentMatchup.equals("BYE")) {
+
                 continue;
+
             }
+
             double opponentsDefenseRating = teamDefenseRatings.get(opponentMatchup);
+
             System.out.println(
                     "Player Name: " + currentPlayer.getFullName()
                             + "\nTeam Name: " + teamOfCurrentPlayer
                             + "\nOpponent: " + opponentMatchup +
                             "\nOpponent Defense Rating: " + opponentsDefenseRating);
+
             System.out.println();
 
             simulatePlayerWeek(currentPlayer, opponentsDefenseRating, gameScript);
@@ -144,6 +150,32 @@ public class Simulations {
             return "BALANCED";
 
         }
+    }
+
+    private double applyGamescriptImpact(double yards, String gameScript, String position) {
+        if (gameScript.equalsIgnoreCase("PASS_HEAVY")) {
+            if (position.equalsIgnoreCase("QB")
+                    || (position.equalsIgnoreCase("WR"))
+                    || (position.equalsIgnoreCase("TE"))) {
+                yards *= 1.15;
+
+            } else if (position.equalsIgnoreCase("RB")) {
+                yards *= 0.90;
+            }
+
+        }
+
+        else if (gameScript.equalsIgnoreCase("RUN_HEAVY")) {
+            if (position.equalsIgnoreCase("QB")
+                    || (position.equalsIgnoreCase("WR"))
+                    || (position.equalsIgnoreCase("TE"))) {
+                yards *= 0.90;
+
+            } else if (position.equalsIgnoreCase("RB")) {
+                yards *= 1.15;
+            }
+        }
+        return yards;
     }
 
     private void createWeeklyMatchups(ArrayList<Player> players) {
@@ -223,14 +255,20 @@ public class Simulations {
     }
 
     private void simulatePlayerWeek(Player player, double defenseRating, String gameScript) {
+
         String currentPlayersPosition = player.getPlayersPosition();
+
         if (currentPlayersPosition.equalsIgnoreCase("QB")) {
+
             double passingYards = getRandomYards(0, 400);
             double offenseRating = teamPassingOffenseRatings.get(player.getPlayersTeam());
+
             passingYards = applyOffenseImpact(passingYards, offenseRating);
+            passingYards = applyGamescriptImpact(passingYards, gameScript, currentPlayersPosition);
             passingYards = applyDefenseImpact(passingYards, defenseRating);
 
             double touchdownChance = calculateTouchdownChance(passingYards, defenseRating);
+
             if (touchdownHappened(touchdownChance)) {
                 player.addTouchdown();
             }
@@ -238,28 +276,31 @@ public class Simulations {
             player.addPassingYards(passingYards);
 
         } else if (currentPlayersPosition.equalsIgnoreCase("RB")) {
+
             double rushingYards = getRandomYards(20, 160);
             double offenseRating = teamRushingOffenseRatings.get(player.getPlayersTeam());
-            rushingYards = applyDefenseImpact(rushingYards, defenseRating);
+
             rushingYards = applyOffenseImpact(rushingYards, offenseRating);
+            rushingYards = applyGamescriptImpact(rushingYards, gameScript, currentPlayersPosition);
+            rushingYards = applyDefenseImpact(rushingYards, defenseRating);
 
             double rushingTouchdownChance = calculateTouchdownChance(rushingYards, defenseRating);
+
             if (touchdownHappened(rushingTouchdownChance)) {
                 player.addTouchdown();
             }
+
             player.addRunningYards(rushingYards);
 
-        }
-
-        else if (currentPlayersPosition.equalsIgnoreCase("WR")
+        } else if (currentPlayersPosition.equalsIgnoreCase("WR")
                 || currentPlayersPosition.equalsIgnoreCase("TE")) {
+
             double receivingYardage = getRandomYards(10, 200);
-            receivingYardage = applyDefenseImpact(receivingYardage, defenseRating);
-
             double offenseRating = teamRecevingOffenseRatings.get(player.getPlayersTeam());
-            receivingYardage = applyOffenseImpact(receivingYardage, offenseRating);
 
-            player.addReceivingYards(receivingYardage);
+            receivingYardage = applyOffenseImpact(receivingYardage, offenseRating);
+            receivingYardage = applyGamescriptImpact(receivingYardage, gameScript, currentPlayersPosition);
+            receivingYardage = applyDefenseImpact(receivingYardage, defenseRating);
 
             double touchdownChance = calculateTouchdownChance(receivingYardage, defenseRating);
 
@@ -267,12 +308,16 @@ public class Simulations {
                 player.addTouchdown();
             }
 
-        } else if (currentPlayersPosition.equalsIgnoreCase("OL")) {
-            System.out.println(player.getFullName() + " helped blocking this week");
-        }
+            player.addReceivingYards(receivingYardage);
 
-        else {
+        } else if (currentPlayersPosition.equalsIgnoreCase("OL")) {
+
+            System.out.println(player.getFullName() + " helped blocking this week");
+
+        } else {
+
             System.out.println(player.getFullName() + " has a unkown position");
+
         }
     }
 }

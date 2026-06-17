@@ -29,5 +29,11 @@ public class main {
         tracker.viewPlayerStats(2);
 
         sim.printWeekSimulation(tracker.getPlayerList());
+
+        leaders.printPassingYardLeader(tracker.getPlayerList());
+        leaders.printRushingLeader(tracker.getPlayerList());
+        leaders.printRecievingLeaders(tracker.getPlayerList());
+        leaders.printTouchdownLeaders(tracker.getPlayerList());
+
     }
 }
