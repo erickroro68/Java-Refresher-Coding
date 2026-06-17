@@ -17,6 +17,7 @@ public class Simulations {
     private HashMap<String, Double> teamPassingOffenseRatings;
     private HashMap<String, Double> teamRecevingOffenseRatings;
     private HashMap<String, String> weeklyMatchups;
+    private HashMap<String, Double> teamOffensiveLineRatings;
     // example: K = team name, V = Opponent Team name ie" Chiefs -> Vikings
 
     public Simulations() {
@@ -29,6 +30,7 @@ public class Simulations {
         teamRecevingOffenseRatings = new HashMap<>();
         teamRushingOffenseRatings = new HashMap<>();
         weeklyMatchups = new HashMap<>();
+        teamOffensiveLineRatings = new HashMap<>();
     }
 
     private void initializeTeamRatings(ArrayList<Player> playersList) {
@@ -38,19 +40,23 @@ public class Simulations {
             String currentPlayersTeamName = currentPlayer.getPlayersTeam();
 
             if (!teamPassingOffenseRatings.containsKey(currentPlayersTeamName)) {
-                teamPassingOffenseRatings.put(currentPlayersTeamName, 1.00);
+                teamPassingOffenseRatings.put(currentPlayersTeamName, getTeamRating());
             }
 
             if (!teamRecevingOffenseRatings.containsKey(currentPlayersTeamName)) {
-                teamRecevingOffenseRatings.put(currentPlayersTeamName, 1.00);
+                teamRecevingOffenseRatings.put(currentPlayersTeamName, getTeamRating());
             }
 
             if (!teamRushingOffenseRatings.containsKey(currentPlayersTeamName)) {
-                teamRushingOffenseRatings.put(currentPlayersTeamName, 1.00);
+                teamRushingOffenseRatings.put(currentPlayersTeamName, getTeamRating());
             }
 
             if (!teamDefenseRatings.containsKey(currentPlayersTeamName)) {
-                teamDefenseRatings.put(currentPlayersTeamName, 1.00);
+                teamDefenseRatings.put(currentPlayersTeamName, getDefenseRating());
+            }
+
+            if (!teamOffensiveLineRatings.containsKey(currentPlayersTeamName)) {
+                teamOffensiveLineRatings.put(currentPlayersTeamName, getTeamRating());
             }
         }
 
@@ -66,81 +72,67 @@ public class Simulations {
 
         String gameScript = getGameScript();
         System.out.println("\nGame Script Chosen: " + gameScript);
-        // TODO: Initialize team ratings before simulation starts.
-        // This calls the private helper method.
-        // initializeTeamRatings(playersList);
 
-        // TODO: Print a debug message after ratings are initialized.
-        // Example: "Team ratings initialized."
-
-        // TODO: Later, create random weekly matchups.
-        // createWeeklyMatchups(playersList);
-
-        // TODO: Create one gameScript for the week.
-        // This happens once before the loop.
-        // Example options:
-        // PASS_HEAVY
-        // RUN_HEAVY
-        // BALANCED
-
-        // TODO: Loop through playersList.
         for (int i = 0; i < playersList.size(); i++) {
 
-            // TODO: Inside the loop, grab one Player object.
+            Player currentPlayer = playersList.get(i);
+            String teamOfCurrentPlayer = currentPlayer.getPlayersTeam();
+            String opponentMatchup = weeklyMatchups.get(teamOfCurrentPlayer);
 
-            // TODO: Get this player's team name.
+            if (opponentMatchup.equals("BYE")) {
+                continue;
+            }
+            double opponentsDefenseRating = teamDefenseRatings.get(opponentMatchup);
+            System.out.println(
+                    "Player Name: " + currentPlayer.getFullName()
+                            + "\nTeam Name: " + teamOfCurrentPlayer
+                            + "\nOpponent: " + opponentMatchup +
+                            "\nOpponent Defense Rating: " + opponentsDefenseRating);
+            System.out.println();
 
-            // TODO: Later, use weeklyMatchups to find this player's opponent team.
-
-            // TODO: Later, get opponent defense rating from teamDefenseRating map.
-
-            // TODO: Send that player, defenseRating, and gameScript
-            // into simulatePlayerWeek().
+            simulatePlayerWeek(currentPlayer, opponentsDefenseRating, gameScript);
         }
-
-        // TODO: Later, after the loop,
-        // update offense ratings and defense ratings.
     }
 
     private double getRandomYards(double min, double max) {
-        // TODO:
-        // Return a random double between min and max.
-
-        // Placeholder so method can compile later:
-        return 0;
+        return min + (random.nextDouble() * (max - min));
     }
 
     private double getDefenseRating() {
-        // TODO:
-        // Return a random defense rating.
-        // Suggested range:
-        // 0.80 = weak defense
-        // 1.00 = average defense
-        // 1.20 = strong defense
 
-        // Placeholder so method can compile later:
-        return 1.0;
+        return 0.80 + (random.nextDouble() * (1.20 - 0.8));
+    }
+
+    private double getTeamRating() {
+        return 0.80 + (random.nextDouble() * (1.20 - 0.8));
+    }
+
+    private double applyOffenseImpact(double baseYards, double offenseRating) {
+        double offenseDifference = offenseRating - 1.00;
+        double finalYards = baseYards * (1 + offenseDifference);
+
+        if (finalYards < 0) {
+            finalYards = 0;
+        }
+
+        return finalYards;
     }
 
     private double applyDefenseImpact(double baseYards, double defenseRating) {
-        // TODO:
-        // Use defenseRating and defenseWeight to change baseYards.
 
-        // TODO thinking:
-        // If defenseRating > 1.0, yards should go down.
-        // If defenseRating < 1.0, yards should go up.
-        // defenseWeight controls how strong the effect is.
+        double defenseDiffernce = defenseRating - 1.00;
+        double adjustment = defenseDiffernce * defenseWeight;
+        double finalYardage = baseYards * (1 - adjustment);
 
-        // Placeholder so method can compile later:
-        return baseYards;
+        if (finalYardage < 1) {
+            return 1;
+        }
+        return finalYardage;
     }
 
     private String getGameScript() {
-        // Randomly return one of these:
         int randomNum = random.nextInt(3);
-        // PASS_HEAVY
-        // RUN_HEAVY
-        // BALANCED
+
         if (randomNum == 0) {
             return "PASS_HEAVY";
         } else if (randomNum == 1) {
@@ -227,6 +219,60 @@ public class Simulations {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void simulatePlayerWeek(Player player, double defenseRating, String gameScript) {
+        String currentPlayersPosition = player.getPlayersPosition();
+        if (currentPlayersPosition.equalsIgnoreCase("QB")) {
+            double passingYards = getRandomYards(0, 400);
+            double offenseRating = teamPassingOffenseRatings.get(player.getPlayersTeam());
+            passingYards = applyOffenseImpact(passingYards, offenseRating);
+            passingYards = applyDefenseImpact(passingYards, defenseRating);
+
+            double touchdownChance = calculateTouchdownChance(passingYards, defenseRating);
+            if (touchdownHappened(touchdownChance)) {
+                player.addTouchdown();
+            }
+
+            player.addPassingYards(passingYards);
+
+        } else if (currentPlayersPosition.equalsIgnoreCase("RB")) {
+            double rushingYards = getRandomYards(20, 160);
+            double offenseRating = teamRushingOffenseRatings.get(player.getPlayersTeam());
+            rushingYards = applyDefenseImpact(rushingYards, defenseRating);
+            rushingYards = applyOffenseImpact(rushingYards, offenseRating);
+
+            double rushingTouchdownChance = calculateTouchdownChance(rushingYards, defenseRating);
+            if (touchdownHappened(rushingTouchdownChance)) {
+                player.addTouchdown();
+            }
+            player.addRunningYards(rushingYards);
+
+        }
+
+        else if (currentPlayersPosition.equalsIgnoreCase("WR")
+                || currentPlayersPosition.equalsIgnoreCase("TE")) {
+            double receivingYardage = getRandomYards(10, 200);
+            receivingYardage = applyDefenseImpact(receivingYardage, defenseRating);
+
+            double offenseRating = teamRecevingOffenseRatings.get(player.getPlayersTeam());
+            receivingYardage = applyOffenseImpact(receivingYardage, offenseRating);
+
+            player.addReceivingYards(receivingYardage);
+
+            double touchdownChance = calculateTouchdownChance(receivingYardage, defenseRating);
+
+            if (touchdownHappened(touchdownChance)) {
+                player.addTouchdown();
+            }
+
+        } else if (currentPlayersPosition.equalsIgnoreCase("OL")) {
+            System.out.println(player.getFullName() + " helped blocking this week");
+        }
+
+        else {
+            System.out.println(player.getFullName() + " has a unkown position");
         }
     }
 }
